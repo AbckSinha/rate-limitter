@@ -2,14 +2,15 @@
 
 
 const express = require('express');
+const app = express();
 const bodyParser = require("body-parser");
 const rateLimit = require('express-rate-limit');
-const app = express();
 
-const port = 8091;
+
+const port = 4201;
 
 const limiter = rateLimit({
-    max: 10,
+    max: 5,
     windowMs: 60 * 60 * 1000,
     message: "Too many request from this IP"
 });
@@ -17,15 +18,16 @@ const limiter = rateLimit({
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json({ limit: '50mb' }));
+app.use(limiter); // will limit below get call after continuous 5 hits
 
 app.get("/", function (request, response) {
-    return {
+    response.send({
         status: "success",
         msg: "welcome to test api for rate limitter"
-    }
+    });
 });
 
-app.use(limiter);
+
 
 app.listen(port, function (err) {
     if (err) {
